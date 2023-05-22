@@ -1,0 +1,10 @@
+*.raw
+*.o
+*.a
+*.elf
+*.out
+*.exe
+*.sav
+*.gba
+*.bin
+*.vpk

@@ -1,0 +1,47 @@
+# name of application
+NAME = "OpposumMassage"
+
+# assemble and link
+CC       = arm-none-eabi-gcc
+AS       = arm-none-eabi-as
+OBJCOPY  = arm-none-eabi-objcopy
+
+# e-reader tools
+NEVPK    = ./nevpk
+NESAV    = ./neflmake
+NEDCMAKE = ./nedcmake
+NEDCENC  = ./nedcenc
+NEDCBMP  = ./raw2bmp
+
+CFLAGS = -mthumb -Os -fomit-frame-pointer -fdata-sections -ffunction-sections -DEREADER
+CFLAGS+= -mno-tpcs-frame -mthumb-interwork
+
+LDFLAGS = -Wl,--as-needed -Wl,--gc-sections -flto -s
+
+OBJS = crt0er.o main.o gbalib.o title.o game.o oldman.o oldman2.o bar.o white.o
+
+all : final
+
+final : main.vpk
+	valgrind $(NEDCMAKE) -i $< -o "main.bin" -type 2 -name $(NAME) -save 1 -header 0 
+	$(NEDCBMP) -i main.bin-01.raw -o main
+
+main.vpk : main.bin
+	$(NEVPK) -i "$<" -o "$@" -c -level 0
+
+main.bin : main.elf
+	$(OBJCOPY) -O binary "$<" "$@"
+
+main.elf : $(OBJS) ereader.ld
+	$(CC) $(OBJS) -lgcc -Tereader.ld -o "$@" $(LDFLAGS)
+
+.o : .c
+	$(CC) $(CFLAGS) -c -o "$@" "$<"
+
+crt0er.o : crt0er.s
+	$(AS) -o "$@" "$<"
+
+clean :
+	rm -f main.*.bin main.*.raw main.*.bmp
+	rm -f main.elf main.map main.bin main.vpk main.sav
+	rm -f main.o crt0.o *.o
