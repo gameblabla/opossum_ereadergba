@@ -13,7 +13,7 @@ NEDCMAKE = ./nedcmake
 NEDCENC  = ./nedcenc
 NEDCBMP  = ./raw2bmp
 
-CFLAGS = -mthumb -Os -fomit-frame-pointer -fdata-sections -ffunction-sections -DEREADER
+CFLAGS = -mthumb -mno-thumb-interwork -Os -fomit-frame-pointer -fdata-sections -ffunction-sections -DEREADER
 CFLAGS+= -mno-tpcs-frame -mthumb-interwork
 
 LDFLAGS = -Wl,--as-needed -Wl,--gc-sections -flto -s
@@ -24,10 +24,12 @@ all : final
 
 final : main.vpk
 	valgrind $(NEDCMAKE) -i $< -o "main.bin" -type 2 -name $(NAME) -save 1 -header 0 
-	$(NEDCBMP) -i main.bin-01.raw -o main
+	$(NEDCBMP) -i main.bin-01.raw -o Opossum01
+	$(NEDCBMP) -i main.bin-02.raw -o Opossum02
+	$(NEDCBMP) -i main.bin-03.raw -o Opossum03
 
 main.vpk : main.bin
-	$(NEVPK) -i "$<" -o "$@" -c -level 0
+	$(NEVPK) -i "$<" -o "$@" -c -level 2 -lzwindow 2058 -lz 752
 
 main.bin : main.elf
 	$(OBJCOPY) -O binary "$<" "$@"
