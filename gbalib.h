@@ -64,7 +64,14 @@ extern void LZ77UnCompVram(const void *source, void *dest);
 extern void Draw_Text(const char* str, uint8_t x, uint8_t y, uint8_t color_index, uint8_t colorbg);
 extern void Draw_Text_Center(const char* str, uint8_t y, uint8_t color_index, uint8_t colorbg);
 
-extern void vid_vsync();
+
+#define REG_VCOUNT *(volatile uint16_t*)0x04000006
+static inline void vid_vsync()
+{
+    while(REG_VCOUNT >= 160);   // wait till VDraw
+    while(REG_VCOUNT < 160);    // wait till VBlank
+}
+
 extern void Init_GBA(uint8_t m);
 
 #define 	REG_DMA3SAD   *(volatile uint32_t*)(REG_BASE+0x00D4)
@@ -78,7 +85,12 @@ extern void Init_GBA(uint8_t m);
 #define 	DMA_16NOW   (DMA_NOW | DMA_16)
 #define 	DMA_32NOW   (DMA_NOW | DMA_32)
 
-extern void DMAFastCopy(const void* source, void* dest, unsigned int count, unsigned int mode);
+static inline void DMAFastCopy(const void* source, void* dest, unsigned int count, unsigned int mode)
+{
+	REG_DMA3SAD = (unsigned int) source;
+	REG_DMA3DAD = (unsigned int) dest;
+	REG_DMA3CNT = count | mode;
+}
 
 extern void drawImage(const unsigned char* imgBuffer, uint8_t imageWidth, uint8_t imageHeight, uint8_t posX, uint8_t posY) ;
 
@@ -107,10 +119,10 @@ extern void drawImage(const unsigned char* imgBuffer, uint8_t imageWidth, uint8_
 #define BUTTON_L 1<<9
 
 
-static inline uint8_t isButtonAPressed() 
+static inline uint8_t isButtonPressed(uint8_t bt) 
 {
     // REG_KEYINPUT is inverted, so "0" means a button is pressed
-    return !(REG_KEYINPUT & BUTTON_A);
+    return !(REG_KEYINPUT & bt);
 }
 
 extern uint16_t prevButtons;
@@ -121,10 +133,10 @@ static inline void updateButtons() {
     currButtons = REG_KEYINPUT;
 }
 
-static inline uint8_t wasButtonAPressed() {
+static inline uint8_t wasButtonPressed(uint8_t bt) {
     // Returns true if A was not pressed in the previous state
     // and is pressed in the current state
-    return (!(prevButtons & BUTTON_A) && (currButtons & BUTTON_A));
+    return (!(prevButtons & bt) && (currButtons & bt));
 }
 
 #endif

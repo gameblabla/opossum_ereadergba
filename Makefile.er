@@ -13,8 +13,7 @@ NEDCMAKE = ./nedcmake
 NEDCENC  = ./nedcenc
 NEDCBMP  = ./raw2bmp
 
-CFLAGS = -mthumb -mno-thumb-interwork -Os -fomit-frame-pointer -fdata-sections -ffunction-sections -DEREADER
-CFLAGS+= -mno-tpcs-frame -mthumb-interwork
+CFLAGS = -mthumb -mno-tpcs-frame -flto -mno-thumb-interwork -Os -fomit-frame-pointer -fdata-sections -ffunction-sections -DEREADER
 
 LDFLAGS = -Wl,--as-needed -Wl,--gc-sections -flto -s
 
@@ -29,7 +28,7 @@ final : main.vpk
 	$(NEDCBMP) -i main.bin-03.raw -o Opossum03
 
 main.vpk : main.bin
-	$(NEVPK) -i "$<" -o "$@" -c -level 2 -lzwindow 2058 -lz 752
+	$(NEVPK) -i "$<" -o "$@" -c -level 2
 
 main.bin : main.elf
 	$(OBJCOPY) -O binary "$<" "$@"

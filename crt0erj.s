@@ -12,6 +12,9 @@
   .ARM
 
 _start:
+  mov  r0,#0x0de
+  swi  #0x10000
+
   @ enter thumb mode
   LDR  R0, =(_start_thumb+1)
   BX   R0
@@ -51,6 +54,8 @@ _bss_clear_exit:
   @ jump to main
   LDR  R3, =main
   BX   R3
+  
+  swi #0 @ Softreset
 
   .ALIGN
 

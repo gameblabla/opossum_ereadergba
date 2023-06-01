@@ -1,11 +1,9 @@
+/* Opossum Massage Simulator GBA eReader source code */
+
 #include <stdint.h>
 #include <stddef.h>
 
 #include "gbalib.h"
-#ifdef EREADER
-#include "def.h"
-#include "erapi.h"
-#endif
 
 #include "title.h"
 #include "game.h"
@@ -14,7 +12,7 @@
 #include "bar.h"
 #include "white.h"
 
-uint8_t quit = 0;
+uint8_t quit;
 uint32_t key;
 uint8_t game_state;
 uint8_t story_text;
@@ -22,7 +20,7 @@ uint8_t start_game;
 int8_t hiscore[5];
 int8_t score[5];
 int16_t carre_tension;
-uint16_t wait = 0;
+uint16_t wait;
 
 void switch_game(uint8_t m);
 
@@ -59,10 +57,10 @@ void DrawStoryText()
 
 void gameplay();
 
-int main(void) {
-	uint8_t frame_current;
-
-	frame_current = 0;
+int main(void) 
+{
+	quit = 0;
+	
 	Init_GBA(DCNT_MODE4);
 
 	hiscore[0] = 48;
@@ -70,31 +68,31 @@ int main(void) {
 	hiscore[2] = 48;
 	hiscore[3] = 48;
 	hiscore[4] = '\0';
-	
+
 	switch_game(0);
 	
-#ifdef EREADER
-	while (quit == 0)
-#else
 	for(;;)
-#endif
 	{
 		updateButtons();
 		wait++;
+		
 		switch(game_state)
 		{
-			case 0:
-				if (wasButtonAPressed())
+			default:
+				if (wasButtonPressed(BUTTON_A))
 				{
 					switch_game(1);
 				}
+
 #ifdef EREADER
-				key = ERAPI_GetKeyStateRaw();
-				if (key & ERAPI_KEY_B) quit = 1;
+				if (isButtonPressed(BUTTON_B) )
+				{
+					SystemCall(0);
+				}
 #endif
 			break;
 			case 1:
-				if (wasButtonAPressed())
+				if (wasButtonPressed(BUTTON_A))
 				{
 					story_text++;
 					if (story_text > 2)
@@ -114,7 +112,7 @@ int main(void) {
 			break;
 			case 3:
 				
-				if (wasButtonAPressed() && wait > 20)
+				if (wasButtonPressed(BUTTON_A) && wait > 20)
 				{
 					switch_game(0);
 				}
@@ -126,11 +124,11 @@ int main(void) {
 		
 		vid_vsync();
 	}
-	
+
 	return 2; // Exit to menu
 }
 
-short rand_a_b(short a, short b)
+static inline short rand_a_b(short a, short b)
 {
     return rand()%(b-a) +a;
 }
@@ -163,7 +161,7 @@ void gameplay()
 	
 	switch (start_game)
 	{
-		case 0:
+		default:
 			Draw_Text_Center("READY?", 32, 1, 0);
 			start_time++;
 			if (start_time > 60)
@@ -171,10 +169,12 @@ void gameplay()
 				start_game = 1;
 				start_time = 0;
 				LZ77UnCompVram(gameBitmap, fb);
+				// DMAFastCopy((void*)gameBitmap, (void*)fb, sizeof(gameBitmap)/4, DMA_32NOW);
 				drawImage(oldmanBitmap, 64, 64, 88, 79);
 				drawImage(barBitmap, 120, 16, 60, 0);
 				possumstate = 0;
 			}
+
 		break;	
 		case 1:
 			add_score(1);
@@ -183,21 +183,20 @@ void gameplay()
 			carre_time_reserve++;
 			time_oldman++;
 			
-			if (score[0] > 2)
-			{
-				possumstate = 4;
-			}
-			else if (score[0] > 1)
+			possumstate = 0;
+			
+
+			if (score[0] > 1)
 			{
 				possumstate = 3;
+				if (score[0] > 2)
+				{
+					possumstate = 4;
+				}
 			}
-			else if (score[1] > 5)
+			if (score[1] > 5)
 			{
 				possumstate = 1;
-			}
-			else
-			{
-				possumstate = 0;
 			}
 			
 			if (carre_tension < 1 || carre_tension > 103)
@@ -210,6 +209,7 @@ void gameplay()
 				while (carre_reserve > 0) 
 				{
 					temp_random = rand_a_b(1, 3);
+					//temp_random = 1;
 					carre_reserve = carre_reserve - 1;
 					carre_tension = (carre_tension + temp_random + possumstate);
 				}
@@ -236,7 +236,7 @@ void gameplay()
 			
 			Draw_Text(score, 0, 0, 1, 0);
 			
-			if (isButtonAPressed() )
+			if (isButtonPressed(BUTTON_A) )
 			{
 				if (time_oldman > 2)
 				{
@@ -246,7 +246,7 @@ void gameplay()
 				}
 				carre_reserve = carre_reserve + 3;
 			}
-		break;		
+		break;
 	}
 
 }
@@ -259,7 +259,6 @@ void switch_game(uint8_t m)
 	story_text = 0;
 	start_game = 0;
 	carre_tension = 52;
-	wait = 0;
 	
 	switch(game_state)
 	{
@@ -267,15 +266,20 @@ void switch_game(uint8_t m)
 		
 			DMAFastCopy((void*)titlePal, (void*)MEM_BG_PALETTE, sizeof(titlePal)/4, DMA_32NOW);
 			memset16(fb, 0x0101, 240*160 / 2);
-			#ifdef CARTRIDGE_RELEASE
+			#ifdef CARTRIDGE
 			LZ77UnCompVram(titleBitmap, fb);
 			#else
+			//DMAFastCopy((void*)titleBitmap, (void*)fb, sizeof(titleBitmap)/4, DMA_32NOW);
+			
+			#if 1
 			memset16(fb, 0x0202, (240 * 4) / 2);
 			memset16(fb + ((240 * 4) / 2), 0x0F0F, (240 * 80) / 2);
 			memset16(fb + ((240 * 4) / 2) + ((240 * 80) / 2) , 0x0202, (240 * 4) / 2);
 			
 			Draw_Text_Center("OPOSSUM MASSAGE", 32, 13, 15);
 			Draw_Text_Center("SIMULATOR", 48, 1, 15);
+			#endif
+			
 			#endif
 			Draw_Text_Center("PUSH START TO PLAY", 120, 15, 0);
 			
@@ -290,7 +294,9 @@ void switch_game(uint8_t m)
 		case 2:
 			DMAFastCopy((void*)gamePal, (void*)MEM_BG_PALETTE, sizeof(gamePal)/4, DMA_32NOW);
 			memset16(fb, 0x0101, 240*160 / 2);
+			
 			LZ77UnCompVram(gameBitmap, fb);
+			//DMAFastCopy((void*)gameBitmap, (void*)fb, sizeof(gameBitmap)/4, DMA_32NOW);
 			
 			score[0] = 48;
 			score[1] = 48;

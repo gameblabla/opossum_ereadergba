@@ -1,0 +1,38 @@
+# name of application
+NAME = "OPOSSUM"
+
+# assemble and link
+CC       = arm-none-eabi-gcc
+AS       = arm-none-eabi-as
+OBJCOPY  = arm-none-eabi-objcopy
+
+# e-reader tools
+NEVPK    =  ./nevpk
+NESAV    =  ./neflmake
+NEDCMAKE =  ./nedcmake
+NEDCENC  =  ./nedcenc
+NEDCBMP  =  ./raw2bmp
+
+OBJS = main.o gbalib.o title.o game.o oldman.o oldman2.o bar.o white.o
+
+CFLAGS =  -Os -fomit-frame-pointer -fdata-sections -ffunction-sections -mthumb -mno-thumb-interwork -DEREADER
+LDFLAGS = -Wl,--as-needed -Wl,--gc-sections -Wl,--strip-debug -flto -s
+
+all : crt0erj.o main.o main.elf main.bin
+
+main.bin : main.elf
+	$(OBJCOPY) -O binary "$<" "$@"
+
+main.elf : crt0erj.o $(OBJS) ereaderjr.ld
+	$(CC) crt0erj.o $(OBJS) -lgcc -Tereaderjr.ld -o "$@" $(LDFLAGS)
+
+main.o : main.c
+	$(CC) $(CFLAGS) -c -o "$@" "$<"
+
+crt0erj.o : crt0erj.s
+	$(AS) -o "$@" "$<"
+
+clean :
+	rm -f main.*.bin main.*.raw main.*.bmp
+	rm -f main.elf main.map main.bin main.vpk main.sav
+	rm -f main.o crt0.o

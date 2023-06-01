@@ -1,0 +1,18 @@
+.arm            ;select 32bit ARM instruction set
+.strict         ;insist on colons in label definitions (label:)
+.nocash         ;indicate using nocash syntax instead native ARM syntax
+
+io_base      equ 4000000h  ;I/O base (r10)
+
+
+ .ereader_create_bmp ;print-able ;\activate one or more of these lines
+ .ereader_create_bin ;small-file ;/
+ .ereader_japan_original        ;/one of these lines (default is non-japan)
+ .title 'OPOSSUM    '            ;-title
+ .no_auto_run                    ;-
+ dd 0  ;unused
+ dd 0  ;reserved (destroyed by ereader bios)
+
+org 2000000h    ;origin in RAM for multiboot-cable/no$gba-cutdown compatibility
+	.import main.bin
+.end
