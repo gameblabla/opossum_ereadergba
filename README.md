@@ -14,7 +14,7 @@ Our planet's only defense now rests on an unlikely savior: the humble opossum. W
 
 Compatibility and emulators
 ============================
-Opposum Massage Simulator works on American as well as the original Japanese e-Reader and the e-Reader Plus.
+Opposum Massage Simulator works on the US e-Reader as well as the original Japanese e-Reader and the e-Reader Plus.
 
 For emulation, you'll need mGBA (https://mgba.io/) and an additional GBA bios as well otherwise scanning the dotcodes
 and playing the game will not work.
