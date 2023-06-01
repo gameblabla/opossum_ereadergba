@@ -1,4 +1,5 @@
-Opossum Massage Simulator
+**Opossum Massage Simulator**
+By gameblabla (PC, Ti Nspire, N64, GBA ports) and DJ Omnimaga (original idea and game for TI83CE)
 
 GAME SYSNOPSIS
 ===============
@@ -32,7 +33,8 @@ Makefile.er is for the US e-Reader
 make -f Makefile.er
 ```
 
-Makefile.erj is for the Japenese e-Reader. (For Japanese e-Readers: you need to use NO$GBA built in assembler to make the final binary by selecting the OPOSSUM.A22 file.)
+Makefile.erj is for the Japanese e-Reader. 
+Additionally, you need to use NO$GBA built-in A22 assembler (Assemble File option in the debugger version) to make the final binary by selecting the OPOSSUM.A22 file.
 ```
 make -f Makefile.erj
 ```
