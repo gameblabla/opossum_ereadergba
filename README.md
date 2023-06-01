@@ -2,7 +2,7 @@
 
 By gameblabla (PC, Ti Nspire, N64, GBA ports) and DJ Omnimaga (original idea and game for TI83CE)
 
-GAME SYSNOPSIS
+Plot/Backstory
 ===============
 In the year 2024, Donald Trump ascended to the presidency of the United States once more. 
 As stated in his party's platform, he implemented a bold and controversial policy: the prohibition of aliens within American borders.
