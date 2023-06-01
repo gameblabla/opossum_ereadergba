@@ -1,11 +1,44 @@
-OPOSSUM_EREADERGBA (or Opossum Massage Simulator)
+Opossum Massage Simulator
 
-1. GAME SYSNOPSIS
-In 2024 AD, Trump became president of 'murica, he banned aliens from 'murica, aliens got offended and after many debates, the alien assembly decided to invade earth, opposums are our only hope against the aliens, please help us for the greater justice !!!!
+GAME SYSNOPSIS
+===============
+In the year 2024, Donald Trump ascended to the presidency of the United States once more. 
+As stated in his party's platform, he implemented a bold and controversial policy: the prohibition of aliens within American borders.
 
-2. Hardware compatibility and emulators
-Opposum Massage Simulator works on American and Japanese e-Readers, for emulation you'll need mGBA (https://mgba.io/) A GBA bios file is needed for the game to work.
+This action was not received lightly by the extraterrestrial community. 
+Deeply affronted, they engaged in extensive deliberations. 
+The alien council, after much debate and consideration, reached a decision. 
+By a substantial majority of 220 to 80 votes, they resolved to launch an invasion upon our Earth.
 
-3. Compiling shenanigans
-For compiling the game, you'll need devkitpro, its recommended to use linux (For Windows users: you'll need to modify the makefiles to run nedcmake tools.)
-Makefile.er is for the US e-Reader, Makefile.erj is for the Japenese e-Reader. (For Japanese e-Readers: you need to use NO$GBA built in assembler to make the final binary by selecting the OPOSSUM.A22 file.)
+Our planet's only defense now rests on an unlikely savior: the humble opossum. We urgently implore your aid in safeguarding our world. Together, we can uphold justice and ensure a secure future for our Earth!
+
+Compatibility and emulators
+============================
+Opposum Massage Simulator works on American as well as the original Japanese e-Reader and the e-Reader Plus.
+
+For emulation, you'll need mGBA (https://mgba.io/) and an additional GBA bios as well otherwise scanning the dotcodes
+and playing the game will not work.
+
+Additionally, the japanese version will only work on No$GBA due to an emulation issue with mGBA (even with BIOS).
+
+Compiling the game
+=====================
+For compiling the game, you'll need devkitpro.
+It's recommended to use linux (as that's the main setup i have). 
+For Windows users: you'll need to modify the makefiles to run nedcmake tools.
+
+Makefile.er is for the US e-Reader
+```
+make -f Makefile.er
+```
+
+Makefile.erj is for the Japenese e-Reader. (For Japanese e-Readers: you need to use NO$GBA built in assembler to make the final binary by selecting the OPOSSUM.A22 file.)
+```
+make -f Makefile.erj
+```
+
+This is for the cartridge release (mostly done for testing) :
+```
+make
+```
+
